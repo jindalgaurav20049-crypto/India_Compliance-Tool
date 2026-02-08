@@ -1,0 +1,18 @@
+{
+  "documents": [
+    {
+      "document_id": "DOC-EX-001",
+      "entity_id": "ENTITY-001",
+      "raw_text": "Balance Sheet current liabilities non-current liabilities. Revenue performance obligation disclosure. Scope 1 Scope 2 emissions."
+    },
+    {
+      "document_id": "DOC-EX-002",
+      "entity_id": "ENTITY-002",
+      "raw_text": "Balance sheet shown. Revenue section present. No liquidity coverage ratio mention."
+    }
+  ],
+  "expected": [
+    {"document_id": "DOC-EX-001", "clause_id": "RBI-DISC-LCR-03", "status": "NON_COMPLIANT"},
+    {"document_id": "DOC-EX-002", "clause_id": "BRSR-CORE-ENV-01", "status": "NON_COMPLIANT"}
+  ]
+}
