@@ -1,0 +1,42 @@
+[
+  {
+    "clause_id": "INDAS115-23",
+    "regulation": "IndAS Vol 1",
+    "disclosure_requirement": "Disaggregate revenue from contracts with customers",
+    "expected_section": "notes",
+    "rule_expression": {"type": "presence", "required_keywords": "revenue,performance obligation"},
+    "severity": "HIGH"
+  },
+  {
+    "clause_id": "SCHIII-BS-07",
+    "regulation": "Schedule III",
+    "disclosure_requirement": "Current and non-current classifications for liabilities",
+    "expected_section": "balance sheet",
+    "rule_expression": {"type": "presence", "required_keywords": "current liabilities,non-current"},
+    "severity": "HIGH"
+  },
+  {
+    "clause_id": "SEBI-LODR-RPT-11",
+    "regulation": "SEBI Disclosure Requirements",
+    "disclosure_requirement": "Related party transactions disclosures",
+    "expected_section": "notes",
+    "rule_expression": {"type": "presence", "required_keywords": "related party,transaction"},
+    "severity": "HIGH"
+  },
+  {
+    "clause_id": "RBI-DISC-LCR-03",
+    "regulation": "RBI Financial Disclosure Norms",
+    "disclosure_requirement": "Liquidity coverage ratio disclosure",
+    "expected_section": "regulatory disclosure",
+    "rule_expression": {"type": "presence", "required_keywords": "liquidity coverage ratio"},
+    "severity": "HIGH"
+  },
+  {
+    "clause_id": "BRSR-CORE-ENV-01",
+    "regulation": "SEBI ESG + BRSR Core",
+    "disclosure_requirement": "Scope 1 and Scope 2 emissions disclosure",
+    "expected_section": "esg",
+    "rule_expression": {"type": "presence", "required_keywords": "scope 1,scope 2"},
+    "severity": "MEDIUM"
+  }
+]

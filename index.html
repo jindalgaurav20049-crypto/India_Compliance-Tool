@@ -3,53 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IndiaAI Financial Reporting Compliance Platform</title>
+  <title>IndiaAI Compliance Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.min.mjs" type="module"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.min.mjs" type="module"></script>
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyebrow">Government-Grade RegTech Workspace</p>
-      <h1>IndiaAI Financial Reporting Compliance Platform</h1>
+      <p class="eyebrow">NFRA | SEBI | RBI | Schedule III Control Plane</p>
+      <h1>IndiaAI Financial Compliance Command Center</h1>
+      <p class="subhead">Production-oriented workflow for extraction, validation, analytics, examination and intelligence-assisted investigation.</p>
     </div>
-    <button id="btnExport" class="btn btn-primary">Export Compliance Report</button>
+    <div class="top-actions">
+      <button id="btnRefreshIntel" class="btn">Refresh Live Intelligence</button>
+      <button id="btnExport" class="btn btn-primary">Export Full Case Report</button>
+    </div>
   </header>
 
   <main class="layout">
-    <aside class="sidebar">
-      <h2>Regulatory Frameworks</h2>
-      <ul>
-        <li>Ind AS (Vol 1, Vol 2, Conceptual Framework)</li>
-        <li>Schedule III General Instructions</li>
-        <li>SEBI Disclosure Requirements</li>
-        <li>RBI Disclosure Norms</li>
-        <li>SEBI ESG & BRSR Core</li>
-        <li>Auditing Standards (Exhaustive List)</li>
+    <aside class="sidebar panel-shell">
+      <h2>1) Ingestion & Extraction</h2>
+      <input id="fileInput" type="file" multiple accept=".txt,.csv,.json,.pdf,.png,.jpg,.jpeg" />
+      <div class="button-stack">
+        <button id="btnProcess" class="btn">Process Documents</button>
+        <button id="btnCompliance" class="btn">Validate Compliance</button>
+        <button id="btnAnalytics" class="btn">Generate Analytics</button>
+        <button id="btnPrelim" class="btn">Run Preliminary Examination</button>
+      </div>
+
+      <h2>2) Framework Coverage</h2>
+      <ul class="framework-list">
+        <li>Indian Accounting Standards (Vol I, II, Conceptual Framework)</li>
+        <li>Schedule III for Financial Statements</li>
+        <li>SEBI Disclosure + ESG + BRSR Core</li>
+        <li>RBI Disclosure Norms for Financial Institutions</li>
+        <li>Auditing Standards and educational guidance</li>
       </ul>
 
-      <h2>Upload & Ingestion</h2>
-      <input id="fileInput" type="file" multiple accept=".txt,.csv,.json,.pdf,.png,.jpg,.jpeg" />
-      <div class="stack">
-        <button id="btnProcess" class="btn">Extract Text + Tables + Metadata</button>
-        <button id="btnCompliance" class="btn">Run Compliance Validation</button>
-        <button id="btnAnalytics" class="btn">Run Automated Analytics</button>
-        <button id="btnPrelim" class="btn">Preliminary Examination</button>
-      </div>
-      <p class="hint">Supports scanned image OCR, digital PDFs, and structured flat files.</p>
+      <h2>3) Security</h2>
+      <p class="hint">Uploaded files are processed in-browser. Only external intelligence/news metadata is fetched from public feeds.</p>
     </aside>
 
     <section class="content">
-      <article class="card" id="statusCard">
+      <article class="panel-shell">
         <h2>Operational Status</h2>
-        <p id="statusText">Awaiting document upload.</p>
+        <p id="statusText">System initialized. Upload documents and run extraction.</p>
+        <div id="metrics" class="metric-grid"></div>
       </article>
 
-      <article class="card grid-2">
+      <article class="panel-shell two-col">
         <div>
           <h2>Document Register</h2>
           <table id="docTable">
@@ -57,45 +63,51 @@
               <tr>
                 <th>Document</th>
                 <th>Type</th>
-                <th>Size</th>
-                <th>Extraction</th>
+                <th>Pages/Rows</th>
+                <th>Quality</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
         <div>
-          <h2>Compliance Findings</h2>
-          <div id="complianceResults" class="panel muted">No validation run yet.</div>
+          <h2>Compliance Decision Log</h2>
+          <div id="complianceResults" class="result-panel muted">No compliance run yet.</div>
         </div>
       </article>
 
-      <article class="card grid-2">
+      <article class="panel-shell two-col">
         <div>
-          <h2>Analytics Overview</h2>
-          <div id="analyticsResults" class="panel muted">No analytics generated yet.</div>
+          <h2>Automated Analytics</h2>
+          <div id="analyticsResults" class="result-panel muted">No analytics generated yet.</div>
         </div>
         <div>
-          <h2>Preliminary Examination Feed</h2>
-          <div id="prelimResults" class="panel muted">No preliminary scan run yet.</div>
+          <h2>Preliminary Examination</h2>
+          <div id="prelimResults" class="result-panel muted">No examination run yet.</div>
         </div>
       </article>
 
-      <article class="card">
-        <h2>NFRA Insight Bot</h2>
-        <p class="hint">Query document chunks, findings, and framework references.</p>
-        <div class="chat-row">
-          <input id="chatInput" type="text" placeholder="Ask about disclosures, audit findings, ESG compliance..." />
-          <button id="btnAsk" class="btn">Ask Bot</button>
+      <article class="panel-shell two-col">
+        <div>
+          <h2>Real-Time Regulatory & Enforcement Intelligence</h2>
+          <p class="hint">Tracks public updates from RBI, SEBI, MCA and financial enforcement news. Auto-refresh every 15 minutes.</p>
+          <div id="intelResults" class="result-panel muted">No feed loaded yet.</div>
         </div>
-        <div id="chatLog" class="chat-log"></div>
+        <div>
+          <h2>NFRA Insight Bot</h2>
+          <p class="hint">Combines uploaded evidence, compliance findings and live intelligence into explainable responses.</p>
+          <div class="chat-row">
+            <input id="chatInput" type="text" placeholder="Ask: Which newest regulation impacts revenue recognition disclosures?" />
+            <button id="btnAsk" class="btn">Ask</button>
+          </div>
+          <div id="chatLog" class="chat-log"></div>
+        </div>
       </article>
     </section>
   </main>
 
-  <footer>
-    Confidentiality-first design: local processing of uploaded files, no outbound data calls for document contents.
-  </footer>
+  <footer>Government-ready prototype • Audit traceability • Explainable outputs • Continuous intelligence ingestion</footer>
 
   <script type="module" src="app.js"></script>
 </body>
