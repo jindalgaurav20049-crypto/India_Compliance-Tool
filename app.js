@@ -57,9 +57,28 @@ const chunkText = (text, size = 420) => {
   return result;
 };
 
+
+let pdfjsLibPromise;
+
+async function getPdfJsLib() {
+  if (globalThis.pdfjsLib) return globalThis.pdfjsLib;
+  if (window.pdfjsLib) return window.pdfjsLib;
+  if (!pdfjsLibPromise) {
+    pdfjsLibPromise = import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.min.mjs')
+      .then((mod) => mod && mod.GlobalWorkerOptions ? mod : null)
+      .catch(() => null);
+  }
+  return pdfjsLibPromise;
+}
+
 async function extractPdfText(file) {
-  const pdfjsLib = globalThis.pdfjsLib || window['pdfjs-dist/build/pdf'];
+  const pdfjsLib = await getPdfJsLib();
   if (!pdfjsLib) return { text: '', pages: 0 };
+
+  if (pdfjsLib.GlobalWorkerOptions) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.min.mjs';
+  }
+
   const data = new Uint8Array(await file.arrayBuffer());
   const pdf = await pdfjsLib.getDocument({ data }).promise;
   const pages = [];
@@ -72,6 +91,7 @@ async function extractPdfText(file) {
 }
 
 async function extractImageText(file) {
+  if (!globalThis.Tesseract) return { text: '', pages: 0 };
   const result = await Tesseract.recognize(file, 'eng', { logger: () => {} });
   return { text: result.data.text, pages: 1 };
 }
@@ -377,19 +397,41 @@ async function processDocuments() {
   }));
   renderDocs();
 
+  let extractedCount = 0;
+  let failedCount = 0;
+
   for (let i = 0; i < files.length; i += 1) {
-    const { text, units } = await parseFile(files[i]);
-    state.docs[i].text = text;
-    state.docs[i].units = units;
-    state.docs[i].quality = estimateQuality(text);
-    state.docs[i].tableSignals = detectTableSignals(text);
-    state.docs[i].extracted = true;
-    setStatus(`Extracted ${i + 1}/${files.length}: ${files[i].name}`);
+    try {
+      const { text, units } = await parseFile(files[i]);
+      state.docs[i].text = text || '';
+      state.docs[i].units = units || 0;
+      state.docs[i].quality = estimateQuality(state.docs[i].text);
+      state.docs[i].tableSignals = detectTableSignals(state.docs[i].text);
+      state.docs[i].extracted = true;
+      extractedCount += 1;
+      setStatus(`Extracted ${i + 1}/${files.length}: ${files[i].name}`);
+    } catch (error) {
+      failedCount += 1;
+      state.docs[i].text = '';
+      state.docs[i].units = 0;
+      state.docs[i].quality = 0;
+      state.docs[i].tableSignals = 0;
+      state.docs[i].extracted = false;
+      setStatus(`Failed extraction for ${files[i].name}. Continuing with remaining files.`);
+      console.error('Document extraction failed', files[i].name, error);
+    }
     renderDocs();
   }
 
-  state.chunks = state.docs.flatMap((doc) => chunkText(doc.text).map((chunk) => `${doc.name}: ${chunk}`));
-  setStatus(`Extraction complete. ${state.docs.length} documents indexed into ${state.chunks.length} chunks.`);
+  state.chunks = state.docs
+    .filter((doc) => doc.extracted && doc.text.trim().length)
+    .flatMap((doc) => chunkText(doc.text).map((chunk) => `${doc.name}: ${chunk}`));
+
+  if (failedCount) {
+    setStatus(`Extraction completed with warnings. Success: ${extractedCount}, Failed: ${failedCount}, Indexed chunks: ${state.chunks.length}.`);
+  } else {
+    setStatus(`Extraction complete. ${state.docs.length} documents indexed into ${state.chunks.length} chunks.`);
+  }
   renderDocs();
 }
 
